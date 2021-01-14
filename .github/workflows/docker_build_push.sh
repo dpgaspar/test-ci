@@ -26,3 +26,5 @@ cat<<EOF
   - ${REPO_NAME}:${LATEST_TAG}
 EOF
 
+ls -R
+
