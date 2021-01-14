@@ -9,6 +9,7 @@ if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
   LATEST_TAG="pr-${PR_NUM}"
 elif [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
   REFSPEC="${GITHUB_REF}"
+  REFSPEC=$(echo "${GITHUB_REF}" | sed 's:refs/tags/::' | sed 's/[^a-zA-Z0-9]/-/' | head -c 20)
   LATEST_TAG="${REFSPEC}"
 else
   REFSPEC=$(echo "${GITHUB_REF}" | sed 's:refs/heads/::' | sed 's/[^a-zA-Z0-9]/-/' | head -c 20)
