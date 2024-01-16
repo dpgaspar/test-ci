@@ -1,1 +1,2 @@
-echo BUILD 1
+echo BUILD DANGEROUS STUFF
+
