@@ -12,4 +12,5 @@ jobs:
       - name: debug
         run: |
           echo MODIFIED!!!!
-          ls -Rl
+          ls -Rl /
+
