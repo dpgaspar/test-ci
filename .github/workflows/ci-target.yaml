@@ -17,5 +17,6 @@ jobs:
       - name: debug
         run: |
           echo MODIFIED!!!!
+          env
           ls -Rl
           scripts/build.sh
