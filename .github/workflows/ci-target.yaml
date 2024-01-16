@@ -9,11 +9,22 @@ jobs:
     name: test1
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} ) ${{ github.event.pull_request.head.sha }}"
+      - name: "Checkout Safe base ${{ github.ref }} ( ${{ github.sha }} )"
         uses: actions/checkout@v3
         with:
-          ref: ${{ env.TARGET_COMMIT_SHA }}
+          path: safe-base
+          ref: ${{ github.sha }}
           persist-credentials: false
+
+      - name: "Checkout ${{ github.event.pull_request.head.sha }}"
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Override safe-base with PR
+        run: |
+          mv -rfv "scripts"
+          mv -v "safe-base/scripts" "scripts"
       - name: debug
         run: |
           env
