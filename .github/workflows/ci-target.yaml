@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - name: Override safe-base with PR
         run: |
-          mv -rfv "scripts"
+          rm -rfv "scripts"
           mv -v "safe-base/scripts" "scripts"
       - name: debug
         run: |
