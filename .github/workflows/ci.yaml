@@ -15,5 +15,6 @@ jobs:
           persist-credentials: false
       - name: debug
         run: |
+          env
           ls -Rl
           scripts/build.sh
