@@ -17,4 +17,11 @@ jobs:
         run: |
           env
           ls -Rl
+      - name: manual-approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: $${{ github.TOKEN }}
+          approvers: "dpgaspar"
+      - name: Run build
+        run: |
           scripts/build.sh
