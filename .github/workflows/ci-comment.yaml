@@ -84,7 +84,30 @@ jobs:
     name: docker-build
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : ${{ github.event.issue.pull_request.head.sha }} )"
+      - name: Get Info from comment
+        uses: actions/github-script@v3
+        id: get-pr
+        with:
+          script: |
+            const request = {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: ${{ github.event.issue.number }},
+                };
+            }
+            const pr = await github.pulls.get(request);
+            return pr.data;
+
+      - name: Debug
+        id: get-pr-num
+        run: |
+          echo ${{ steps.get-pr.outputs.number }}
+      - name: Debug
+        id: get-pr-sha
+        run: |
+          echo ${{ steps.get-pr.outputs.head.sha }}
+
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : ${{  }} )"
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.issue.pull_request.head.sha }}
