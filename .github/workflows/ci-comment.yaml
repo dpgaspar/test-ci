@@ -103,7 +103,7 @@ jobs:
           docker buildx build --target ci \
             --load \
             -t ${{ github.sha }} \
-            -t "pr-${{ github.event.pull_request.number }}" \
+            -t "pr-${{ github.event.issue.number }}" \
             --platform linux/amd64 \
             --label "build_actor=${GITHUB_ACTOR}" \
             .
