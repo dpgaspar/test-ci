@@ -102,7 +102,7 @@ jobs:
       - name: Debug
         id: get-pr-sha
         run: |
-          echo ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
+          echo ${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
 
       - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : )"
         uses: actions/checkout@v4
