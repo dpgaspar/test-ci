@@ -107,7 +107,7 @@ jobs:
         run: |
           echo ${{ steps.get-pr.outputs.head.sha }}
 
-      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : ${{  }} )"
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : )"
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.issue.pull_request.head.sha }}
