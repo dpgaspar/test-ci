@@ -98,8 +98,8 @@ jobs:
       - name: Build ephemeral env image
         run: |
           mkdir -p ./build
-          echo ${{ github.sha }} > ./build/SHA
-          echo ${{ github.event.pull_request.number }} > ./build/PR-NUM
+          echo ${{ github.sha }}
+          echo ${{ github.event.issue.number }}
           docker buildx build \
             --load \
             -t ${{ github.sha }} \
@@ -107,4 +107,12 @@ jobs:
             --platform linux/amd64 \
             --label "build_actor=${GITHUB_ACTOR}" \
             .
-          docker save ${{ github.sha }} | gzip > ./build/${{ github.sha }}.tar.gz
+
+      - name: Load, tag and push image to ECR
+        id: push-image
+        run: |
+          echo HELO
+#          docker tag $SHA $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#          docker tag $SHA $ECR_REGISTRY/$ECR_REPOSITORY:$SHA
+#          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+
