@@ -84,7 +84,7 @@ jobs:
     name: docker-build
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : ${{ github.event.issue.pull_request.head.sha }} )"
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.issue.pull_request.head.sha }}
