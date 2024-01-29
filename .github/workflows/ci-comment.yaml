@@ -1,0 +1,80 @@
+name: Ephemeral env workflow
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  config:
+    runs-on: "ubuntu-latest"
+    if: github.event.issue.pull_request
+    outputs:
+      has-secrets: ${{ steps.check.outputs.has-secrets }}
+    steps:
+      - name: "Check for secrets"
+        id: check
+        shell: bash
+        run: |
+          if [ -n "${{ (secrets.SECRET1 != '' && secrets.SECRET1 != '') || '' }}" ]; then
+            echo "has-secrets=1" >> "$GITHUB_OUTPUT"
+          fi
+
+  ephemeral_env_comment:
+    needs: config
+    if: needs.config.outputs.has-secrets
+    name: Evaluate ephemeral env comment trigger (/testenv)
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    outputs:
+      slash-command: ${{ steps.eval-body.outputs.result }}
+      feature-flags: ${{ steps.eval-feature-flags.outputs.result }}
+
+    steps:
+      - name: Debug
+        run: |
+          echo "Comment on PR #${{ github.event.issue.number }} by ${{ github.event.issue.user.login }}, ${{ github.event.comment.author_association }}"
+
+      - name: Eval comment body for /testenv slash command
+        uses: actions/github-script@v3
+        id: eval-body
+        with:
+          result-encoding: string
+          script: |
+            const pattern = /^\/testenv (up|down)/
+            const result = pattern.exec(context.payload.comment.body)
+            return result === null ? 'noop' : result[1]
+
+      - name: Eval comment body for feature flags
+        uses: actions/github-script@v3
+        id: eval-feature-flags
+        with:
+          script: |
+            const pattern = /FEATURE_(\w+)=(\w+)/g;
+            let results = [];
+            [...context.payload.comment.body.matchAll(pattern)].forEach(match => {
+              const config = {
+                name: `SUPERSET_FEATURE_${match[1]}`,
+                value: match[2],
+              };
+              results.push(config);
+            });
+            return results;
+
+      - name: Limit to committers
+        if: >
+          steps.eval-body.outputs.result != 'noop' &&
+          github.event.comment.author_association != 'MEMBER' &&
+          github.event.comment.author_association != 'OWNER'
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{github.token}}
+          script: |
+            const errMsg = '@${{ github.event.comment.user.login }} Ephemeral environment creation is currently limited to committers. @${{ github.event.comment.author_association }}'
+            github.issues.createComment({
+              issue_number: ${{ github.event.issue.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: errMsg
+            })
+            core.setFailed(errMsg)
