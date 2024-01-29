@@ -86,7 +86,7 @@ jobs:
     steps:
       - name: Get Info from comment
         uses: actions/github-script@v3
-        id: get-pr
+        id: get-pr-info
         with:
           script: |
             const request = {
@@ -102,12 +102,12 @@ jobs:
       - name: Debug
         id: get-pr-sha
         run: |
-          echo ${{ fromJSON(steps.get-pr.outputs.result).head.sha }}
+          echo "::set-output name=sha::${{ fromJSON(steps.get-pr-info.outputs.result).head.sha }}"
 
-      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : )"
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : ${{steps.get-sha.outputs.sha}} )"
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.issue.pull_request.head.sha }}
+          ref: ${{ steps.get-sha.outputs.sha }}
           persist-credentials: false
 
       - name: Set up QEMU
@@ -119,12 +119,12 @@ jobs:
       - name: Build ephemeral env image
         run: |
           mkdir -p ./build
-          echo ${{ github.event.issue.pull_request.head.sha }}
-          echo ${{ github.event.issue.pull_request.number }}
+          echo ${{ steps.get-sha.outputs.sha }}
+          echo ${{ github.event.issue.number }}
           docker buildx build \
             --load \
-            -t ${{ github.sha }} \
-            -t "pr-${{ github.event.pull_request.number }}" \
+            -t ${{ steps.get-sha.outputs.sha }} \
+            -t "pr-${{ github.event.issue.number }}" \
             --platform linux/amd64 \
             --label "build_actor=${GITHUB_ACTOR}" \
             .
@@ -136,4 +136,3 @@ jobs:
 #          docker tag $SHA $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 #          docker tag $SHA $ECR_REGISTRY/$ECR_REPOSITORY:$SHA
 #          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-
