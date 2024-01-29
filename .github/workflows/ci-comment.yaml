@@ -87,7 +87,7 @@ jobs:
       - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.issue.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Set up QEMU
@@ -99,8 +99,8 @@ jobs:
       - name: Build ephemeral env image
         run: |
           mkdir -p ./build
-          echo ${{ github.event.pull_request.head.sha }}
-          echo ${{ github.event.pull_request.number }}
+          echo ${{ github.event.issue.pull_request.head.sha }}
+          echo ${{ github.event.issue.pull_request.number }}
           docker buildx build \
             --load \
             -t ${{ github.sha }} \
