@@ -107,7 +107,7 @@ jobs:
       - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} : ${{steps.get-sha.outputs.sha}} )"
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.get-sha.outputs.sha }}
+          ref: ${{ fromJSON(steps.get-pr-info.outputs.result).head.sha }}
           persist-credentials: false
 
       - name: Set up QEMU
@@ -117,13 +117,15 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build ephemeral env image
+        with:
+          sha: ${{ fromJSON(steps.get-pr-info.outputs.result).head.sha }}
         run: |
           mkdir -p ./build
-          echo ${{ steps.get-sha.outputs.sha }}
+          echo ${{ sha }}
           echo ${{ github.event.issue.number }}
           docker buildx build \
             --load \
-            -t ${{ steps.get-sha.outputs.sha }} \
+            -t ${{ sha }} \
             -t "pr-${{ github.event.issue.number }}" \
             --platform linux/amd64 \
             --label "build_actor=${GITHUB_ACTOR}" \
