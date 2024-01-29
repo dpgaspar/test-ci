@@ -100,7 +100,7 @@ jobs:
             return pr.data;
 
       - name: Debug
-        id: get-pr-sha
+        id: get-sha
         run: |
           echo "sha=${{ fromJSON(steps.get-pr-info.outputs.result).head.sha }}" >> $GITHUB_OUTPUT
 
