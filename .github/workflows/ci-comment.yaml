@@ -96,7 +96,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build ephemeral env image
-        if: github.event_name == 'pull_request'
         run: |
           mkdir -p ./build
           echo ${{ github.sha }} > ./build/SHA
