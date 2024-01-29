@@ -101,6 +101,7 @@ jobs:
           echo ${{ github.sha }} > ./build/SHA
           echo ${{ github.event.pull_request.number }} > ./build/PR-NUM
           docker buildx build \
+            --load \
             -t ${{ github.sha }} \
             -t "pr-${{ github.event.issue.number }}" \
             --platform linux/amd64 \
