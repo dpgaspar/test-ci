@@ -80,6 +80,7 @@ jobs:
             core.setFailed(errMsg)
 
   ephemeral-docker-build:
+    needs: ephemeral_env_comment
     name: docker-build
     runs-on: ubuntu-latest
     steps:
